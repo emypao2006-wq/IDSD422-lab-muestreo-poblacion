@@ -26,17 +26,23 @@ str(clientes)
 #         (character)? Anótalo para el informe. Ojo con satisfaccion: llega
 #         como número y es ordinal ("4 no es el doble de 2") — la justificación
 #         va en el informe.
+# Columnas numericas (int):edad, numero_hijos, ingresos_mensuales y satisfaccion.
+#
+# Columnas de texto (character): cliente_id, genero, nivel_educacion y ciudad.
+#
+# Aunque satisfaccion aparece como entero, es una variable categorica ordinal porque sus valores representan niveles
 
 # ---------------------------------------------------------------------------
 # 3. Valores únicos — ¿cuántas categorías hay y cuáles son?
 # ---------------------------------------------------------------------------
-# TODO 2: completa el bucle para imprimir, por columna, cuántos valores únicos
-#         hay y cuáles son. Pista: for (columna in names(clientes)) { ... } con
-#         unique() y length(). ¿Cuántas categorías tiene genero?
-# for (columna in names(clientes)) {
-#   ...
-# }
+# TODO 2: 
+for (columna in names(clientes)) {
+  valores <- unique(clientes[[columna]])
 
+  cat("\nVariable:", columna, "\n")
+  cat("Cantidad de valores unicos:", length(valores), "\n")
+  cat("Valores:", paste(valores, collapse = ", "), "\n")
+}
 # ---------------------------------------------------------------------------
 # 4. Declarar el orden de las variables ordinales
 # ---------------------------------------------------------------------------
@@ -44,27 +50,73 @@ str(clientes)
 # "Posgrado" iría antes que "Primaria", que no tiene sentido. En R, eso se
 # declara con el factor ordenado.
 #
-# TODO 3: convierte nivel_educacion con factor(..., levels = c(...), ordered = TRUE).
-#         Comprueba con min(): debe devolver "Primaria".
-# TODO 4: haz lo mismo con satisfaccion (escala 1–5 como etiquetas ordenadas).
-#         Prueba extra: ¿qué pasa si en levels escribes "Postgrado" (con t) para
-#         nivel_educacion? Cuenta los faltantes con sum(is.na(...)) — la trampa
-#         del typo es silenciosa.
+# TODO 3: 
+orden_educacion <- c(
+  "Primaria",
+  "Secundaria",
+  "Universidad",
+  "Posgrado"
+)
 
+clientes$nivel_educacion <- factor(
+  clientes$nivel_educacion,
+  levels = orden_educacion,
+  ordered = TRUE
+)
+
+cat("\nNivel educativo minimo:",
+    as.character(min(clientes$nivel_educacion)), "\n")
+
+cat("Valores faltantes en nivel educativo:",
+    sum(is.na(clientes$nivel_educacion)), "\n")
+
+# TODO 4:
+
+orden_satisfaccion <- c(1, 2, 3, 4, 5)
+
+clientes$satisfaccion <- factor(
+  clientes$satisfaccion,
+  levels = orden_satisfaccion,
+  ordered = TRUE
+)
+
+cat("\nSatisfaccion minima:",
+    as.character(min(clientes$satisfaccion)), "\n")
+
+cat("Valores faltantes en satisfaccion:",
+    sum(is.na(clientes$satisfaccion)), "\n")
+
+
+# Prueba adicional: escribir Postgrado en vez de Posgrado
+
+orden_incorrecto <- c(
+  "Primaria",
+  "Secundaria",
+  "Universidad",
+  "Postgrado"
+)
+
+educacion_error <- factor(
+  as.character(clientes$nivel_educacion),
+  levels = orden_incorrecto,
+  ordered = TRUE
+)
+
+cat("Valores faltantes con Postgrado:",
+    sum(is.na(educacion_error)), "\n")
 # ---------------------------------------------------------------------------
 # 5. Resumen de la clasificación (para el informe)
 # ---------------------------------------------------------------------------
-# TODO 5: completa el resumen con el tipo de cada variable (el criterio que
-#         justifica cada clasificación va en el informe).
+# TODO 5:
 clasificacion <- c(
-  cliente_id         = "…",
-  edad               = "…",
-  numero_hijos       = "…",
-  genero             = "…",
-  nivel_educacion    = "…",
-  ciudad             = "…",
-  ingresos_mensuales = "…",
-  satisfaccion       = "…"
+  cliente_id         = "Identificador nominal",
+  edad               = "Cuantitativa discreta (años cumplidos)",
+  numero_hijos       = "Cuantitativa discreta",
+  genero             = "Categorica nominal",
+  nivel_educacion    = "Categorica ordinal",
+  ciudad             = "Categorica nominal",
+  ingresos_mensuales = "Cuantitativa continua",
+  satisfaccion       = "Categorica ordinal"
 )
 cat("\nResumen de la clasificación (para el informe):\n")
 for (variable in names(clasificacion)) {
